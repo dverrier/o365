@@ -178,7 +178,7 @@ module RubyOutlook
     # fields (array): An array of field names to include in results
     # sort (hash): { sort_on => field_to_sort_on, sort_order => 'ASC' | 'DESC' }
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
-    def get_messages(token, view_size, page, fields = nil, sort = nil, user = nil)
+    def get_messages(token, view_size, page, fields = nil, sort = nil, user = nil, search = nil)
       request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages"
       request_params = {
         '$top' => view_size,
@@ -191,6 +191,11 @@ module RubyOutlook
       
       if not sort.nil?
         request_params['$orderby'] = sort[:sort_field] + " " + sort[:sort_order]
+      end
+      if search
+        request_params['$search'] = search
+        # $skip is not allowed with search
+        request_params['$skip'] = nil
       end
       
       get_messages_response = make_api_call "GET", request_url, token, request_params
