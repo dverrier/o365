@@ -73,6 +73,7 @@ module RubyOutlook
       end
       
       if response.status >= 300
+        puts response
         return JSON.dump({ 'ruby_outlook_error' => response.status})
       end
       
@@ -196,9 +197,9 @@ module RubyOutlook
       if search
         request_params['$search'] = search
         # $skip and $orderby not allowed with search
-        request_params = request_params.except('$skip', '$orderby')
+        request_params.except!('$skip', '$orderby')
       end
-      
+           
       get_messages_response = make_api_call "GET", request_url, token, request_params
       
     
