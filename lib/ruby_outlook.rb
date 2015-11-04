@@ -192,14 +192,16 @@ module RubyOutlook
       if not sort.nil?
         request_params['$orderby'] = sort[:sort_field] + " " + sort[:sort_order]
       end
+
       if search
         request_params['$search'] = search
-        # $skip is not allowed with search
-        request_params['$skip'] = nil
+        # $skip and $orderby not allowed with search
+        request_params = request_params.except('$skip', '$orderby')
       end
       
       get_messages_response = make_api_call "GET", request_url, token, request_params
       
+    
       return JSON.parse(get_messages_response)
     end
     
