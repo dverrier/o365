@@ -196,8 +196,7 @@ module RubyOutlook
 
       if search
         request_params['$search'] = search
-        # $skip and $orderby not allowed with search
-        request_params.except!('$skip', '$orderby')
+        request_params['$skip'] = nil # not alllowed with search
       end
            
       get_messages_response = make_api_call "GET", request_url, token, request_params
