@@ -4,8 +4,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ruby_outlook/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "ruby_outlook"
-  spec.version       = RubyOutlook::VERSION
+  spec.name          = "0365"
+  spec.version       = O365::VERSION
   spec.authors       = ["Jason Johnston"]
   spec.email         = ["jasonjoh@microsoft.com"]
 

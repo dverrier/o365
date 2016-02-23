@@ -1,10 +1,6 @@
-require "ruby_outlook/version"
-require "faraday"
-require "uuidtools"
-require "json"
 
-module RubyOutlook
-  
+module O365
+  require 'awesome_print'
   class Client
     # User agent
     attr_reader :user_agent
@@ -12,6 +8,7 @@ module RubyOutlook
     # Always "https://outlook.office365.com"
     attr_writer :api_host
     attr_writer :enable_fiddler
+    attr_writer :test
     
     # method (string): The HTTP method to use for the API call. 
     #                  Must be 'GET', 'POST', 'PATCH', or 'DELETE'
@@ -31,13 +28,28 @@ module RubyOutlook
         conn_params[:proxy] = 'http://127.0.0.1:8888'
         conn_params[:ssl] = {:verify => false}
       end
-    
-      conn = Faraday.new(conn_params) do |faraday|
-        # Uses the default Net::HTTP adapter
-        faraday.adapter  Faraday.default_adapter  
-        
+
+      if @faraday_instance
+        conn = @faraday_instance
+      else
+        conn = Faraday.new(conn_params) do |faraday|
+          # Uses the default Net::HTTP adapter
+          faraday.adapter  Faraday.default_adapter
+        end
       end
-      
+      # conn = Faraday.new(conn_params) do |faraday|
+      #   if @test 
+      #     # stubs = Faraday::Adapter::Test::Stubs.new
+      #     # faraday.adapter :test, stubs do |stub|
+      #     #   stub.get('/api/v1.0/Me/Messages') { |env| [200, {}, {'body'=>'ok'}.to_json ] }
+      #     # end
+      #     faraday.adapter :test
+      #   else
+      #     # Uses the default Net::HTTP adapter
+      #     faraday.adapter  Faraday.default_adapter
+      #   end
+      # end
+
       conn.headers = {
         'Authorization' => "Bearer #{token}",
         'Accept' => "application/json",
@@ -72,6 +84,7 @@ module RubyOutlook
           end
       end
       
+      # ap response
       if response.status >= 300
         puts response
         return JSON.dump({ 'ruby_outlook_error' => response.status})
@@ -411,11 +424,12 @@ module RubyOutlook
     #----- End Calendar API -----#
     
     private
-      def initialize
-        @user_agent = "RubyOutlookGem/" << RubyOutlook::VERSION
+      def initialize(faraday_instance: nil)
+        @user_agent = "O365Gem/v" << O365::VERSION
         @api_host = "https://outlook.office365.com"
         @enable_fiddler = false
-        super
+        @faraday_instance = faraday_instance
+        super()
       end
   end
 end
