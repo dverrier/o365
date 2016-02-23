@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'o365/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "0365"
+  spec.name          = "O365"
   spec.version       = O365::VERSION
   spec.licenses         = ['MIT']
   spec.authors       = ["Jason Johnston", "David Verrier"]
