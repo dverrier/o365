@@ -6,7 +6,6 @@ class MailTest < Minitest::Test
     # TODO: Copy a valid, non-expired access token here.
     @token = 'eyJ0eXAiOiJKV1QiLCJhbGciO...' # access_ token
 
-    # @new_message_payload = {"msg"=> "text"}.to_json
     @test_response = {'body'=>'ok'}
     faraday_instance = Faraday.new() do |faraday|
       stubs = Faraday::Adapter::Test::Stubs.new
