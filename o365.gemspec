@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'o365/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "O365"
+  spec.name          = "o365"
   spec.version       = O365::VERSION
   spec.licenses         = ['MIT']
   spec.authors       = ["Jason Johnston", "David Verrier"]
@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   end
   
   spec.add_dependency "faraday", "~> 0.9.2"
-  spec.add_dependency "uuidtools", "~> 2.3", '>= 2.3.8'
+  spec.add_dependency "uuidtools", "~> 2.1", '>= 2.1.5'
 
   spec.add_development_dependency "bundler", "~> 1.8"
   spec.add_development_dependency "rake", "~> 10.5"
