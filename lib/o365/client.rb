@@ -8,7 +8,6 @@ module O365
     # Always "https://outlook.office365.com"
     attr_writer :api_host
     attr_writer :enable_fiddler
-    attr_writer :test
     
     # method (string): The HTTP method to use for the API call. 
     #                  Must be 'GET', 'POST', 'PATCH', or 'DELETE'
@@ -37,18 +36,6 @@ module O365
           faraday.adapter  Faraday.default_adapter
         end
       end
-      # conn = Faraday.new(conn_params) do |faraday|
-      #   if @test 
-      #     # stubs = Faraday::Adapter::Test::Stubs.new
-      #     # faraday.adapter :test, stubs do |stub|
-      #     #   stub.get('/api/v1.0/Me/Messages') { |env| [200, {}, {'body'=>'ok'}.to_json ] }
-      #     # end
-      #     faraday.adapter :test
-      #   else
-      #     # Uses the default Net::HTTP adapter
-      #     faraday.adapter  Faraday.default_adapter
-      #   end
-      # end
 
       conn.headers = {
         'Authorization' => "Bearer #{token}",
