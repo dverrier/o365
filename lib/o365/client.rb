@@ -12,7 +12,7 @@ module O365
     # method (string): The HTTP method to use for the API call. 
     #                  Must be 'GET', 'POST', 'PATCH', or 'DELETE'
     # url (string): The URL to use for the API call. Must not contain
-    #               the host. For example: '/api/v1.0/me/messages'
+    #               the host. For example: '/api/v2.0/me/messages'
     # token (string): access token
     # params (hash) a Ruby hash containing any query parameters needed for the API call
     # payload (hash): a JSON hash representing the API call's payload. Only used
@@ -89,7 +89,7 @@ module O365
     # sort (hash): { sort_on => field_to_sort_on, sort_order => 'ASC' | 'DESC' }
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_contacts(token, view_size, page, fields = nil, sort = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts"
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts"
       request_params = {
         '$top' => view_size,
         '$skip' => (page - 1) * view_size
@@ -113,7 +113,7 @@ module O365
     # fields (array): An array of field names to include in results
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_contact_by_id(token, id, fields = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts/" << id 
       request_params = nil
       
       if not fields.nil?
@@ -131,7 +131,7 @@ module O365
     #                     If nil, contact is created in the default contacts folder.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def create_contact(token, payload, folder_id = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user))
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user))
       if not folder_id.nil?
         request_url << "/ContactFolders/" << folder_id
       end
@@ -147,7 +147,7 @@ module O365
     # id (string): The Id of the contact to update.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def update_contact(token, payload, id, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts/" << id 
       
       update_contact_response = make_api_call "PATCH", request_url, token, nil, payload
       
@@ -158,7 +158,7 @@ module O365
     # id (string): The Id of the contact to delete.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def delete_contact(token, id, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Contacts/" << id 
       
       delete_response = make_api_call "DELETE", request_url, token
       
@@ -180,7 +180,7 @@ module O365
     # sort (hash): { sort_on => field_to_sort_on, sort_order => 'ASC' | 'DESC' }
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_messages(token, view_size, page, fields = nil, sort = nil, user = nil, search = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages"
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages"
       request_params = {
         '$top' => view_size,
         '$skip' => (page - 1) * view_size
@@ -210,7 +210,7 @@ module O365
     # fields (array): An array of field names to include in results
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_message_by_id(token, id, fields = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages/" << id 
       request_params = nil
       
       if not fields.nil?
@@ -228,7 +228,7 @@ module O365
     #                     If nil, message is created in the default drafts folder.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def create_message(token, payload, folder_id = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user))
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user))
       if not folder_id.nil?
         request_url << "/Folders/" << folder_id
       end
@@ -244,7 +244,7 @@ module O365
     # id (string): The Id of the message to update.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def update_message(token, payload, id, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages/" << id 
       
       update_message_response = make_api_call "PATCH", request_url, token, nil, payload
       
@@ -255,7 +255,7 @@ module O365
     # id (string): The Id of the message to delete.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def delete_message(token, id, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages/" << id 
       
       delete_response = make_api_call "DELETE", request_url, token
       
@@ -270,7 +270,7 @@ module O365
     # payload (hash): a JSON hash representing the message to send
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def send_message(token, payload, save_to_sentitems = true, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/SendMail"
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/SendMail"
       
       # Wrap message in the sendmail JSON structure
       send_mail_json = {
@@ -298,7 +298,7 @@ module O365
     # sort (hash): { sort_on => field_to_sort_on, sort_order => 'ASC' | 'DESC' }
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_events(token, view_size, page, fields = nil, sort = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events"
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events"
       request_params = {
         '$top' => view_size,
         '$skip' => (page - 1) * view_size
@@ -322,7 +322,7 @@ module O365
     # fields (array): An array of field names to include in results
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_event_by_id(token, id, fields = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events/" << id 
       request_params = nil
       
       if not fields.nil?
@@ -342,7 +342,7 @@ module O365
     # fields (array): An array of field names to include in results
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_calendar_view(token, window_start, window_end, id = nil, fields = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user))
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user))
       
       if not id.nil?
         request_url << "/Calendars/" << id
@@ -370,7 +370,7 @@ module O365
     #                     If nil, event is created in the default calendar folder.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def create_event(token, payload, folder_id = nil, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user))
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user))
       if not folder_id.nil?
         request_url << "/Calendars/" << folder_id
       end
@@ -386,7 +386,7 @@ module O365
     # id (string): The Id of the event to update.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def update_event(token, payload, id, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events/" << id 
       
       update_event_response = make_api_call "PATCH", request_url, token, nil, payload
       
@@ -397,7 +397,7 @@ module O365
     # id (string): The Id of the event to delete.
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def delete_event(token, id, user = nil)
-      request_url = "/api/v1.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events/" << id 
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Events/" << id 
       
       delete_response = make_api_call "DELETE", request_url, token
       
