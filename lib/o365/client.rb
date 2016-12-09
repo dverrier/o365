@@ -180,7 +180,7 @@ module O365
     # sort (hash): { sort_on => field_to_sort_on, sort_order => 'ASC' | 'DESC' }
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_messages(token, view_size, page, fields = nil, sort = nil, user = nil, search = nil)
-      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << folder << "/Messages"
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages"
       request_params = {
         '$top' => view_size,
         '$skip' => (page - 1) * view_size
