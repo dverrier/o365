@@ -1,6 +1,6 @@
 
 module O365
-  require 'awesome_print'
+  
   class Client
     # User agent
     attr_reader :user_agent
@@ -8,7 +8,12 @@ module O365
     # Always "https://outlook.office365.com"
     attr_writer :api_host
     attr_writer :enable_fiddler
-    
+
+    def initialize
+      @user_agent = "o365Gem/" << O365::VERSION
+      @api_host = "https://outlook.office365.com"
+      @enable_fiddler = false
+    end
     # method (string): The HTTP method to use for the API call. 
     #                  Must be 'GET', 'POST', 'PATCH', or 'DELETE'
     # url (string): The URL to use for the API call. Must not contain
@@ -28,13 +33,9 @@ module O365
         conn_params[:ssl] = {:verify => false}
       end
 
-      if @faraday_instance
-        conn = @faraday_instance
-      else
-        conn = Faraday.new(conn_params) do |faraday|
+      conn = Faraday.new(conn_params) do |faraday|
           # Uses the default Net::HTTP adapter
           faraday.adapter  Faraday.default_adapter
-        end
       end
 
       conn.headers = {
@@ -71,13 +72,12 @@ module O365
           end
       end
       
-      # ap response
       if response.status >= 300
         puts response
         return JSON.dump({ 'ruby_outlook_error' => response.status})
       end
       
-      return response.body
+      response.body
     end
     
     #----- Begin Contacts API -----#
@@ -180,31 +180,55 @@ module O365
     # sort (hash): { sort_on => field_to_sort_on, sort_order => 'ASC' | 'DESC' }
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def get_messages(token, view_size, page, fields = nil, sort = nil, user = nil, search = nil)
-      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages"
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << folder << "/Messages"
       request_params = {
         '$top' => view_size,
         '$skip' => (page - 1) * view_size
       }
       
-      if not fields.nil?
+      unless fields.nil?
         request_params['$select'] = fields.join(',')
       end 
       
-      if not sort.nil?
+      unless sort.nil?
         request_params['$orderby'] = sort[:sort_field] + " " + sort[:sort_order]
       end
 
       if search
         request_params['$search'] = search
         request_params['$skip'] = nil # not alllowed with search
-      end
-           
-      get_messages_response = make_api_call "GET", request_url, token, request_params
-      
-    
-      return JSON.parse(get_messages_response)
+      end     
+      get_messages_response = make_api_call "GET", request_url, token, request_params  
+      JSON.parse(get_messages_response)
     end
-    
+
+    # token (string): access token
+    # view_size (int): maximum number of results
+    # page (int): What page to fetch (multiple of view size)
+    # fields (array): An array of field names to include in results
+    # sort (hash): { sort_on => field_to_sort_on, sort_order => 'ASC' | 'DESC' }
+    # user (string): The user to make the call for. If nil, use the 'Me' constant.
+    # folder_id (string): The folder to get mail for. (inbox, drafts, sentitems, deleteditems)
+    def get_messages_for_folder(token, view_size, page, fields = nil, sort = nil, user = nil, folder_id)
+      request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/MailFolders/#{folder_id}/messages"
+      request_params = {
+        '$top' => view_size,
+        '$skip' => (page - 1) * view_size
+      }
+
+      unless fields.nil?
+        request_params['$select'] = fields.join(',')
+      end
+
+      unless sort.nil?
+        request_params['$orderby'] = sort[:sort_field] + " " + sort[:sort_order]
+      end
+
+      get_messages_response = make_api_call "GET", request_url, token, request_params
+
+      JSON.parse(get_messages_response)
+    end
+
     # token (string): access token
     # id (string): The Id of the message to retrieve
     # fields (array): An array of field names to include in results
@@ -212,14 +236,11 @@ module O365
     def get_message_by_id(token, id, fields = nil, user = nil)
       request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user)) << "/Messages/" << id 
       request_params = nil
-      
-      if not fields.nil?
+      unless fields.nil?
         request_params = { '$select' => fields.join(',') }
       end
-      
       get_message_response = make_api_call "GET", request_url, token, request_params
-      
-      return JSON.parse(get_message_response)
+      JSON.parse(get_message_response)
     end
     
     # token (string): access token
@@ -229,7 +250,7 @@ module O365
     # user (string): The user to make the call for. If nil, use the 'Me' constant.
     def create_message(token, payload, folder_id = nil, user = nil)
       request_url = "/api/v2.0/" << (user.nil? ? "Me" : ("users/" << user))
-      if not folder_id.nil?
+      unless folder_id.nil?
         request_url << "/Folders/" << folder_id
       end
       request_url << "/Messages"
@@ -248,7 +269,7 @@ module O365
       
       update_message_response = make_api_call "PATCH", request_url, token, nil, payload
       
-      return JSON.parse(update_message_response)
+      JSON.parse(update_message_response)
     end
     
     # token (string): access token
