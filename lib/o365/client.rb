@@ -9,10 +9,11 @@ module O365
     attr_writer :api_host
     attr_writer :enable_fiddler
 
-    def initialize
+    def initialize(verbose: nil, enable_fiddler: nil)
       @user_agent = "o365Gem/" << O365::VERSION
       @api_host = "https://outlook.office365.com"
-      @enable_fiddler = false
+      @verbose = verbose
+      @enable_fiddler = enable_fiddler
     end
     # method (string): The HTTP method to use for the API call. 
     #                  Must be 'GET', 'POST', 'PATCH', or 'DELETE'
@@ -25,7 +26,7 @@ module O365
     def make_api_call(method, url, token, params = nil, payload = nil)
       
       conn_params = {
-        :url => 'https://outlook.office365.com'
+        :url => 'https://outlook.office.com'
       }
       
       if @enable_fiddler
@@ -36,12 +37,13 @@ module O365
       conn = Faraday.new(conn_params) do |faraday|
           # Uses the default Net::HTTP adapter
           faraday.adapter  Faraday.default_adapter
+          faraday.response :logger if @verbose
       end
 
       conn.headers = {
         'Authorization' => "Bearer #{token}",
         'Accept' => "application/json",
-        
+        'X-AnchorMailbox' => 'David.Verrier@latviatours.lv',
         # Client instrumentation
         # See https://msdn.microsoft.com/EN-US/library/office/dn720380(v=exchg.150).aspx
         'User-Agent' => @user_agent,
@@ -71,8 +73,11 @@ module O365
             request.url url, params
           end
       end
-      
+
+      puts response if @verbose
+
       if response.status >= 300
+        puts 'O365 error'
         puts response
         return JSON.dump({ 'ruby_outlook_error' => response.status})
       end
@@ -199,6 +204,7 @@ module O365
         request_params['$skip'] = nil # not alllowed with search
       end     
       get_messages_response = make_api_call "GET", request_url, token, request_params  
+      ap get_messages_response
       JSON.parse(get_messages_response)
     end
 
@@ -430,14 +436,6 @@ module O365
     end
     
     #----- End Calendar API -----#
-    
-    private
-      def initialize(faraday_instance: nil)
-        @user_agent = "O365Gem/v" << O365::VERSION
-        @api_host = "https://outlook.office365.com"
-        @enable_fiddler = false
-        @faraday_instance = faraday_instance
-        super()
-      end
+
   end
 end
