@@ -204,7 +204,6 @@ module O365
         request_params['$skip'] = nil # not alllowed with search
       end     
       get_messages_response = make_api_call "GET", request_url, token, request_params  
-      ap get_messages_response
       JSON.parse(get_messages_response)
     end
 
